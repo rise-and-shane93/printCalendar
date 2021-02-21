@@ -3,20 +3,20 @@ import java.util.Scanner;
 public class Calendar {
     public static void main(String[] args) {
 
-        // Scanner input = new Scanner(System.in);
-        // System.out.print("Welcome to the calendar program. To start, please enter the desired month as\na number from 1 to 12 followed by the year (ex:2021): ");
-        // int userMonth = input.nextInt();
-        // int userYear = input.nextInt();
+        Scanner input = new Scanner(System.in);
+        System.out.print("Welcome to the calendar program. To start, please enter the desired\nmonth as a number from 1 to 12 followed by the year (ex:2021): ");
+        int userMonth = input.nextInt();
+        int userYear = input.nextInt();
 
-        // while (userMonth < 1 || userMonth > 12) {
-        //     System.out.print("Invalid month input. Please try again: ");
-        //     userMonth = input.nextInt();
-        // }
+        while (userMonth < 1 || userMonth > 12) {
+            System.out.print("Invalid month input. Please try again: ");
+            userMonth = input.nextInt();
+        }
 
-        // printMonthCalendar(userMonth,userYear);
-        boolean checkYear = isLeapYear(1900);
+        printMonthCalendar(userMonth,userYear);
+        // int daysInMonth = getNumDaysInMonth(7,2020);
         // int day = getStartDay(3,1,2004);
-        System.out.println(checkYear);
+        // System.out.println(daysInMonth);
     }
 
 
@@ -56,7 +56,10 @@ public class Calendar {
     }
 
     public static void printMonthCalendar(int m, int y) {
+        System.out.println();
         printMonthHeader(m,y);
+        printMonthBody(m,y);
+        System.out.println("\n");
     }
 
     public static void printMonthHeader( int m, int y ) {
@@ -66,11 +69,107 @@ public class Calendar {
             System.out.print("-");
         }
         System.out.println("\n Sun Mon Tue Wed Thu Fri Sat ");
-        printMonthBody(m,y);
     }
+
+    /* Number of spaces for start day
+
+        Sunday: 3
+        Monday: 7
+        Tuesday: 11
+        Wednesday: 15
+        Thursday: 19
+        Friday: 23
+        Saturday: 27
+
+        Number of spaces between... 
+        
+        single digit numbers: 3
+        double digit numbers: 2
+    */
     
     public static void printMonthBody(int m, int y) {
-        System.out.println("   1   2   3   4   5   6   7");
+
+        int daysInMonth = getNumDaysInMonth(m,y);
+        int startDay = getStartDay(m,1,y);
+        String spacesBeforeFirstDay = getSpacesForStartDay(startDay);
+        
+        int nextDayIntStart = startDay;
+        int nextDayInt = 0;
+
+        String spaceBetweenDigits = "";
+
+        for (int x = 1; x <= daysInMonth; x++) {
+                if (x < 9) {
+                    spaceBetweenDigits = "   ";
+                } else if (x >= 9) {
+                    spaceBetweenDigits = "  ";
+                }
+
+                if (x == 1) {
+                    System.out.print(spacesBeforeFirstDay);
+                }
+                nextDayInt = getNextDayInt(nextDayIntStart);
+
+                if (nextDayInt == 7) {
+                    System.out.print(x + "\n" + spaceBetweenDigits);
+                } else {
+                    System.out.print(x + spaceBetweenDigits);
+                }
+
+                nextDayIntStart++;
+        }
+    }
+
+    public static int getNextDayInt(int d) {
+        int nextDay = 0;
+        
+        nextDay = d;
+        // System.out.println("Next day is: " + nextDay);
+        if (nextDay < 7) {
+            nextDay++;
+        } else if (nextDay == 7) {
+            nextDay = 1;
+            // nextDay++;
+        } else if (nextDay > 7) {
+            nextDay = nextDay % 7;
+            nextDay++;
+        }
+        return nextDay;
+
+    }
+
+    public static String getSpacesForStartDay(int d) {
+        int numSpaces = 0;
+        String spaces = "";
+        switch(d) {
+            case 1:
+                numSpaces = 7;
+                break;
+            case 2:
+                numSpaces = 11;
+                break;
+            case 3:
+                numSpaces = 15;
+                break;
+            case 4:
+                numSpaces = 19;
+                break;
+            case 5:
+                numSpaces = 23;
+                break;
+            case 6:
+                numSpaces = 27;
+                break;
+            case 7:
+                numSpaces = 3;
+                break;
+        }
+
+        for (int x = 0; x < numSpaces; x++) {
+            spaces += " ";
+        }
+
+        return spaces;
     }
 
     public static String getMonthName( int m ) {
@@ -118,6 +217,33 @@ public class Calendar {
                 
         }
         return monthName;
+    }
+
+    // should return an int
+    public static int getNumDaysInMonth( int m, int y) {
+        int daysinFeb = isLeapYear(y) ? 29 : 28;
+        int days = 0;
+        switch (m) {
+            case 1:
+            case 3:
+            case 5:
+            case 7:
+            case 8:
+            case 10:
+            case 12:
+                days = 31;
+                break;
+            case 4:
+            case 6:
+            case 9:
+            case 11:
+                days = 30;
+                break;
+            case 2:
+                days = daysinFeb;
+                break;
+        }
+        return days;
     }
 
     public static boolean isLeapYear( int y ) {
